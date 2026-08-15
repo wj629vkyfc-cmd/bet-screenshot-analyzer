@@ -1,0 +1,184 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Bet Screenshot Analyzer</title>
+
+  <style>
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      font-family: Arial, sans-serif;
+      background: #0b0f17;
+      color: white;
+      min-height: 100vh;
+    }
+
+    .container {
+      width: 100%;
+      max-width: 500px;
+      margin: auto;
+      padding: 25px 18px;
+    }
+
+    .logo {
+      text-align: center;
+      font-size: 28px;
+      font-weight: bold;
+      margin: 20px 0 8px;
+    }
+
+    .subtitle {
+      text-align: center;
+      color: #9aa4b2;
+      margin-bottom: 35px;
+    }
+
+    .card {
+      background: #151b26;
+      border: 1px solid #252d3a;
+      border-radius: 18px;
+      padding: 22px;
+    }
+
+    h1 {
+      font-size: 22px;
+      margin-top: 0;
+    }
+
+    .upload {
+      display: block;
+      border: 2px dashed #3b82f6;
+      border-radius: 15px;
+      padding: 35px 15px;
+      text-align: center;
+      cursor: pointer;
+      color: #b9c2d0;
+      margin-top: 20px;
+    }
+
+    .upload strong {
+      display: block;
+      color: white;
+      font-size: 17px;
+      margin-bottom: 8px;
+    }
+
+    input[type="file"] {
+      display: none;
+    }
+
+    #preview {
+      display: none;
+      width: 100%;
+      max-height: 350px;
+      object-fit: contain;
+      margin-top: 20px;
+      border-radius: 12px;
+    }
+
+    button {
+      width: 100%;
+      border: none;
+      border-radius: 12px;
+      padding: 15px;
+      margin-top: 20px;
+      font-size: 16px;
+      font-weight: bold;
+      cursor: pointer;
+      background: #2563eb;
+      color: white;
+    }
+
+    button:disabled {
+      background: #303846;
+      color: #788292;
+      cursor: not-allowed;
+    }
+
+    .info {
+      margin-top: 20px;
+      padding: 14px;
+      border-radius: 12px;
+      background: #101620;
+      color: #9aa4b2;
+      font-size: 14px;
+      line-height: 1.5;
+    }
+  </style>
+</head>
+
+<body>
+
+  <div class="container">
+
+    <div class="logo">⚽ Bet Screenshot Analyzer</div>
+
+    <div class="subtitle">
+      Analyse ton match à partir d'une capture d'écran
+    </div>
+
+    <div class="card">
+
+      <h1>Importer une capture</h1>
+
+      <label class="upload">
+        <strong>📷 Choisir une capture d'écran</strong>
+        Appuie ici pour sélectionner l'image de ton match
+
+        <input
+          type="file"
+          id="imageInput"
+          accept="image/*"
+        >
+      </label>
+
+      <img id="preview" alt="Aperçu de la capture">
+
+      <button id="analyzeButton" disabled>
+        🔍 Analyser le match
+      </button>
+
+      <div class="info">
+        Le système analysera les informations visibles sur la capture
+        afin de préparer l'analyse et le pronostic du match.
+      </div>
+
+    </div>
+
+  </div>
+
+  <script>
+    const imageInput = document.getElementById("imageInput");
+    const preview = document.getElementById("preview");
+    const analyzeButton = document.getElementById("analyzeButton");
+
+    imageInput.addEventListener("change", function () {
+
+      const file = this.files[0];
+
+      if (!file) return;
+
+      const imageURL = URL.createObjectURL(file);
+
+      preview.src = imageURL;
+      preview.style.display = "block";
+
+      analyzeButton.disabled = false;
+    });
+
+    analyzeButton.addEventListener("click", function () {
+
+      alert(
+        "Capture reçue ! La prochaine étape sera d'ajouter l'analyse et le pronostic."
+      );
+
+    });
+  </script>
+
+</body>
+</html>
