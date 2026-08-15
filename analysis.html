@@ -3,6 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
   <title>Analyse du match</title>
 
   <style>
@@ -12,292 +13,429 @@
 
     body {
       margin: 0;
-      background: #0b0f17;
-      color: white;
-      font-family: Arial, sans-serif;
+      background: #080b12;
+      color: #f5f7fb;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Arial, sans-serif;
     }
 
     .container {
-      max-width: 500px;
+      width: 100%;
+      max-width: 760px;
       margin: auto;
-      padding: 25px 18px 40px;
+      padding: 28px 20px 60px;
     }
 
     .top {
       text-align: center;
-      margin: 20px 0 30px;
+      margin-bottom: 28px;
     }
 
-    .top .icon {
-      font-size: 45px;
+    .top h1 {
+      margin: 0;
+      font-size: 34px;
+      font-weight: 800;
     }
 
-    h1 {
-      font-size: 28px;
-      margin: 10px 0;
-    }
-
-    .subtitle {
-      color: #9aa4b2;
-      font-size: 16px;
+    .top p {
+      margin-top: 10px;
+      color: #9ca7ba;
+      font-size: 17px;
     }
 
     .card {
-      background: #151b26;
-      border: 1px solid #283142;
-      border-radius: 18px;
-      padding: 22px;
+      background: #151a24;
+      border: 1px solid #293347;
+      border-radius: 26px;
+      padding: 26px;
+      margin-bottom: 20px;
+      box-shadow: 0 10px 30px rgba(0,0,0,.18);
+    }
+
+    .match-title {
+      text-align: center;
+      color: #aab4c6;
+      font-size: 18px;
       margin-bottom: 18px;
     }
 
-    .match {
+    .teams {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      gap: 16px;
+      flex-wrap: wrap;
       text-align: center;
     }
 
-    .teams {
-      font-size: 23px;
-      font-weight: bold;
-      margin: 15px 0;
+    .team {
+      font-size: 27px;
+      font-weight: 800;
     }
 
     .vs {
-      color: #3b82f6;
-      margin: 0 8px;
+      color: #4d8dff;
+      font-size: 27px;
+      font-weight: 900;
     }
 
     .date {
-      color: #9aa4b2;
+      text-align: center;
+      margin-top: 18px;
+      color: #9ca7ba;
+      font-size: 18px;
     }
 
     .section-title {
-      font-size: 18px;
-      font-weight: bold;
-      margin-bottom: 15px;
+      font-size: 25px;
+      font-weight: 800;
+      margin-bottom: 20px;
     }
 
-    .odds {
-      display: grid;
-      grid-template-columns: repeat(3, 1fr);
-      gap: 8px;
-    }
-
-    .odd {
-      background: #0e141e;
-      border-radius: 12px;
-      padding: 13px 5px;
-      text-align: center;
-    }
-
-    .odd span {
-      display: block;
-      color: #9aa4b2;
-      font-size: 13px;
-      margin-bottom: 6px;
-    }
-
-    .odd strong {
-      font-size: 20px;
+    .info {
+      background: #0e131d;
+      border-radius: 18px;
+      padding: 18px;
+      color: #b6c0d1;
+      line-height: 1.6;
+      font-size: 16px;
     }
 
     .prediction {
-      text-align: center;
-      background: #101827;
-      border: 1px solid #315db8;
+      border: 1px solid #2d3c57;
+      background: #101722;
+      border-radius: 22px;
+      padding: 22px;
+      margin-top: 16px;
     }
 
-    .prediction-label {
-      color: #9aa4b2;
-      font-size: 14px;
+    .prediction h3 {
+      margin: 0 0 12px;
+      font-size: 20px;
     }
 
     .prediction-main {
-      font-size: 28px;
-      font-weight: bold;
-      margin: 12px 0;
+      font-size: 25px;
+      font-weight: 800;
+      margin: 10px 0;
     }
 
     .confidence {
-      font-size: 20px;
-      font-weight: bold;
+      color: #72a7ff;
+      font-size: 18px;
+      font-weight: 700;
     }
 
     .risk {
-      margin-top: 12px;
-      color: #f5c451;
-      font-weight: bold;
+      margin-top: 8px;
+      color: #f2c75c;
+      font-weight: 700;
     }
 
-    .reason {
-      color: #b5bfcc;
+    .analysis-text {
+      color: #aeb8c9;
+      font-size: 17px;
+      line-height: 1.7;
+    }
+
+    .warning {
+      background: #101722;
+      border: 1px solid #293347;
+      border-radius: 18px;
+      padding: 18px;
+      color: #9faabc;
+      font-size: 14px;
       line-height: 1.6;
-      font-size: 15px;
+      margin-top: 22px;
     }
 
-    .back {
+    .back-button {
+      display: block;
       width: 100%;
       border: none;
-      border-radius: 12px;
-      padding: 15px;
-      background: #252e3d;
+      border-radius: 17px;
+      padding: 17px;
+      background: #3267e8;
       color: white;
-      font-size: 16px;
-      font-weight: bold;
-      cursor: pointer;
+      font-size: 18px;
+      font-weight: 800;
+      text-align: center;
+      text-decoration: none;
+      margin-top: 24px;
+    }
+
+    .back-button:active {
+      transform: scale(.98);
+    }
+
+    .loading {
+      text-align: center;
+      color: #8f9aae;
+      padding: 30px 10px;
     }
   </style>
 </head>
 
 <body>
 
-<div class="container">
+  <main class="container">
 
-  <div class="top">
-    <div class="icon">📊</div>
-    <h1>Analyse du match</h1>
-    <div class="subtitle">Analyse automatique des informations détectées</div>
-  </div>
+    <header class="top">
+      <h1>⚽ Analyse du match</h1>
+      <p>Analyse basée sur les informations du match</p>
+    </header>
 
-  <div class="card match">
-    <div class="section-title">⚽ Match</div>
+    <!-- MATCH -->
+    <section class="card">
 
-    <div class="teams">
-      <span id="team1">Espanyol</span>
-      <span class="vs">VS</span>
-      <span id="team2">Levante UD</span>
-    </div>
-
-    <div class="date" id="matchDate">
-      16.08.2026 — 18:00
-    </div>
-  </div>
-
-  <div class="card">
-
-    <div class="section-title">📈 Cotes 1X2</div>
-
-    <div class="odds">
-
-      <div class="odd">
-        <span>V1</span>
-        <strong id="odd1">2.135</strong>
+      <div class="match-title">
+        🏟️ Match détecté
       </div>
 
-      <div class="odd">
-        <span>Nul</span>
-        <strong id="oddX">3.455</strong>
+      <div class="teams">
+        <div class="team" id="team1">Équipe 1</div>
+
+        <div class="vs">VS</div>
+
+        <div class="team" id="team2">Équipe 2</div>
       </div>
 
-      <div class="odd">
-        <span>V2</span>
-        <strong id="odd2">3.88</strong>
+      <div class="date" id="matchDate">
+        Date et heure du match
       </div>
 
-    </div>
+    </section>
 
-  </div>
 
-  <div class="card prediction">
+    <!-- INFORMATIONS -->
+    <section class="card">
 
-    <div class="prediction-label">
-      🎯 PRONOSTIC PRINCIPAL
-    </div>
+      <div class="section-title">
+        📋 Informations détectées
+      </div>
 
-    <div class="prediction-main" id="prediction">
-      Victoire Espanyol
-    </div>
+      <div class="info">
 
-    <div class="confidence">
-      Confiance : <span id="confidence">—</span>
-    </div>
+        <div>
+          <strong>🏆 Championnat :</strong>
+          <span id="league">Non détecté</span>
+        </div>
 
-    <div class="risk">
-      ⚠️ Risque : <span id="risk">—</span>
-    </div>
+        <div>
+          <strong>📅 Date :</strong>
+          <span id="dateInfo">Non détectée</span>
+        </div>
 
-  </div>
+        <div>
+          <strong>🕐 Heure :</strong>
+          <span id="timeInfo">Non détectée</span>
+        </div>
 
-  <div class="card">
+      </div>
 
-    <div class="section-title">📝 Analyse</div>
+    </section>
 
-    <div class="reason" id="reason">
-      Analyse des cotes en cours...
-    </div>
 
-  </div>
+    <!-- ANALYSE -->
+    <section class="card">
 
-  <button class="back" onclick="window.location.href='index.html'">
-    ← Nouvelle capture
-  </button>
+      <div class="section-title">
+        📊 Analyse
+      </div>
 
-</div>
+      <div class="analysis-text" id="analysisText">
 
-<script>
+        Analyse en préparation.
 
-  const odd1 = 2.135;
-  const oddX = 3.455;
-  const odd2 = 3.88;
+        <br><br>
 
-  const p1 = 1 / odd1;
-  const px = 1 / oddX;
-  const p2 = 1 / odd2;
+        Le système doit analyser notamment :
+        <br>• la forme récente des deux équipes
+        <br>• les derniers résultats
+        <br>• les buts marqués
+        <br>• les buts encaissés
+        <br>• les performances à domicile et à l'extérieur
+        <br>• les confrontations précédentes
+        <br>• les tendances récentes
 
-  const total = p1 + px + p2;
+      </div>
 
-  const prob1 = (p1 / total) * 100;
-  const prob2 = (p2 / total) * 100;
-  const probX = (px / total) * 100;
+    </section>
 
-  let prediction;
-  let confidence;
-  let risk;
-  let reason;
 
-  if (prob1 > prob2 && prob1 > probX) {
+    <!-- PRONOSTIC 1 -->
+    <section class="card">
 
-    prediction = "Victoire Espanyol";
-    confidence = Math.round(prob1) + "%";
+      <div class="section-title">
+        🏆 Pronostic — Résultat
+      </div>
 
-    if (prob1 >= 50) {
-      risk = "Faible à moyen";
-    } else {
-      risk = "Moyen";
+      <div class="prediction">
+
+        <h3>Résultat du match</h3>
+
+        <div class="prediction-main" id="resultPrediction">
+          Analyse en cours...
+        </div>
+
+        <div class="confidence" id="resultConfidence">
+          Confiance : — %
+        </div>
+
+        <div class="risk" id="resultRisk">
+          ⚠️ Risque : —
+        </div>
+
+      </div>
+
+    </section>
+
+
+    <!-- PRONOSTIC 2 -->
+    <section class="card">
+
+      <div class="section-title">
+        ⚽ Pronostic — Les deux équipes marquent
+      </div>
+
+      <div class="prediction">
+
+        <h3>BTTS</h3>
+
+        <div class="prediction-main" id="bttsPrediction">
+          Analyse en cours...
+        </div>
+
+        <div class="confidence" id="bttsConfidence">
+          Confiance : — %
+        </div>
+
+        <div class="risk" id="bttsRisk">
+          ⚠️ Risque : —
+        </div>
+
+      </div>
+
+    </section>
+
+
+    <!-- PRONOSTIC 3 -->
+    <section class="card">
+
+      <div class="section-title">
+        🎯 Pronostic — Nombre de buts
+      </div>
+
+      <div class="prediction">
+
+        <h3>Total de buts</h3>
+
+        <div class="prediction-main" id="goalsPrediction">
+          Analyse en cours...
+        </div>
+
+        <div class="confidence" id="goalsConfidence">
+          Confiance : — %
+        </div>
+
+        <div class="risk" id="goalsRisk">
+          ⚠️ Risque : —
+        </div>
+
+      </div>
+
+    </section>
+
+
+    <!-- NOTE -->
+    <section class="warning">
+
+      ⚠️ <strong>Important :</strong>
+
+      Les pronostics sont des estimations et ne garantissent pas
+      le résultat d'un match.
+
+      <br><br>
+
+      Les cotes de paris ne sont pas utilisées comme base de décision
+      dans cette interface.
+
+      <br><br>
+
+      Pour produire une analyse réellement basée sur la forme des équipes,
+      le site devra ensuite être connecté à une source de données football
+      fiable et actualisée.
+
+    </section>
+
+
+    <a href="index.html" class="back-button">
+      ← Retour à l'importation
+    </a>
+
+  </main>
+
+
+  <script>
+
+    /*
+      Pour l'instant, les informations affichées ici
+      sont des valeurs de démonstration.
+
+      La prochaine étape sera de transmettre automatiquement
+      les équipes, la date et le championnat depuis index.html.
+    */
+
+    const params = new URLSearchParams(window.location.search);
+
+    const team1 = params.get("team1");
+    const team2 = params.get("team2");
+    const league = params.get("league");
+    const date = params.get("date");
+    const time = params.get("time");
+
+
+    if (team1) {
+      document.getElementById("team1").textContent = team1;
     }
 
-    reason =
-      "Les cotes indiquent Espanyol comme l'issue la plus probable " +
-      "parmi les trois résultats 1X2. Cette estimation est basée " +
-      "uniquement sur les cotes visibles et ne constitue pas une " +
-      "garantie du résultat.";
+    if (team2) {
+      document.getElementById("team2").textContent = team2;
+    }
 
-  } else if (prob2 > prob1 && prob2 > probX) {
+    if (league) {
+      document.getElementById("league").textContent = league;
+    }
 
-    prediction = "Victoire Levante UD";
-    confidence = Math.round(prob2) + "%";
-    risk = "Moyen";
+    if (date) {
+      document.getElementById("dateInfo").textContent = date;
+    }
 
-    reason =
-      "Les cotes donnent Levante UD comme l'issue la plus probable " +
-      "parmi les résultats 1X2.";
+    if (time) {
+      document.getElementById("timeInfo").textContent = time;
+    }
 
-  } else {
+    if (date || time) {
 
-    prediction = "Match nul";
-    confidence = Math.round(probX) + "%";
-    risk = "Élevé";
+      const dateDisplay =
+        (date || "Date inconnue") +
+        " — " +
+        (time || "Heure inconnue");
 
-    reason =
-      "Le marché donne une probabilité relativement importante au " +
-      "match nul, mais cette issue reste difficile à prévoir.";
+      document.getElementById("matchDate").textContent =
+        dateDisplay;
+    }
 
-  }
 
-  document.getElementById("prediction").textContent = prediction;
-  document.getElementById("confidence").textContent = confidence;
-  document.getElementById("risk").textContent = risk;
-  document.getElementById("reason").textContent = reason;
+    /*
+      IMPORTANT :
 
-</script>
+      Aucun calcul basé sur les cotes n'est effectué ici.
+
+      Les vraies prédictions seront ajoutées lorsque
+      nous connecterons les données sportives réelles.
+    */
+
+  </script>
 
 </body>
 </html>
