@@ -1,441 +1,736 @@
 <!DOCTYPE html>
 <html lang="fr">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Analyse du match — Bet Screenshot Analyzer</title>
 
-  <title>Analyse du match</title>
+<style>
+* {
+  box-sizing: border-box;
+}
 
-  <style>
-    * {
-      box-sizing: border-box;
-    }
+body {
+  margin: 0;
+  background: #080b12;
+  color: #f5f7fb;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+}
 
-    body {
-      margin: 0;
-      background: #080b12;
-      color: #f5f7fb;
-      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Arial, sans-serif;
-    }
+.container {
+  width: min(920px, calc(100% - 28px));
+  margin: auto;
+  padding: 28px 0 60px;
+}
 
-    .container {
-      width: 100%;
-      max-width: 760px;
-      margin: auto;
-      padding: 28px 20px 60px;
-    }
+h1 {
+  font-size: 34px;
+  text-align: center;
+  margin: 10px 0 8px;
+}
 
-    .top {
-      text-align: center;
-      margin-bottom: 28px;
-    }
+.subtitle {
+  text-align: center;
+  color: #9ea8ba;
+  font-size: 17px;
+  line-height: 1.5;
+  margin-bottom: 28px;
+}
 
-    .top h1 {
-      margin: 0;
-      font-size: 34px;
-      font-weight: 800;
-    }
+.card {
+  background: #151b27;
+  border: 1px solid #283247;
+  border-radius: 24px;
+  padding: 24px;
+  margin: 18px 0;
+  box-shadow: 0 10px 30px rgba(0,0,0,.15);
+}
 
-    .top p {
-      margin-top: 10px;
-      color: #9ca7ba;
-      font-size: 17px;
-    }
+h2 {
+  font-size: 24px;
+  margin: 0 0 18px;
+}
 
-    .card {
-      background: #151a24;
-      border: 1px solid #293347;
-      border-radius: 26px;
-      padding: 26px;
-      margin-bottom: 20px;
-      box-shadow: 0 10px 30px rgba(0,0,0,.18);
-    }
+.upload {
+  border: 2px dashed #3d82ff;
+  border-radius: 18px;
+  min-height: 170px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  padding: 22px;
+  cursor: pointer;
+  background: #111722;
+}
 
-    .match-title {
-      text-align: center;
-      color: #aab4c6;
-      font-size: 18px;
-      margin-bottom: 18px;
-    }
+.upload strong {
+  display: block;
+  font-size: 20px;
+  margin-bottom: 8px;
+}
 
-    .teams {
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      gap: 16px;
-      flex-wrap: wrap;
-      text-align: center;
-    }
+.muted {
+  color: #a6afc0;
+}
 
-    .team {
-      font-size: 27px;
-      font-weight: 800;
-    }
+input[type=file] {
+  display: none;
+}
 
-    .vs {
-      color: #4d8dff;
-      font-size: 27px;
-      font-weight: 900;
-    }
+.preview {
+  width: 100%;
+  max-height: 420px;
+  object-fit: contain;
+  border-radius: 16px;
+  margin-top: 18px;
+  display: none;
+  background: #0d121c;
+}
 
-    .date {
-      text-align: center;
-      margin-top: 18px;
-      color: #9ca7ba;
-      font-size: 18px;
-    }
+button {
+  width: 100%;
+  border: 0;
+  border-radius: 16px;
+  padding: 17px;
+  font-size: 18px;
+  font-weight: 800;
+  background: #3267e8;
+  color: white;
+  cursor: pointer;
+  margin-top: 18px;
+}
 
-    .section-title {
-      font-size: 25px;
-      font-weight: 800;
-      margin-bottom: 20px;
-    }
+button:disabled {
+  background: #303949;
+  color: #8892a4;
+  cursor: not-allowed;
+}
 
-    .info {
-      background: #0e131d;
-      border-radius: 18px;
-      padding: 18px;
-      color: #b6c0d1;
-      line-height: 1.6;
-      font-size: 16px;
-    }
+.status {
+  margin-top: 15px;
+  color: #aeb8c9;
+  line-height: 1.5;
+  text-align: center;
+}
 
-    .prediction {
-      border: 1px solid #2d3c57;
-      background: #101722;
-      border-radius: 22px;
-      padding: 22px;
-      margin-top: 16px;
-    }
+.match {
+  display: grid;
+  grid-template-columns: 1fr auto 1fr;
+  gap: 14px;
+  align-items: center;
+  text-align: center;
+}
 
-    .prediction h3 {
-      margin: 0 0 12px;
-      font-size: 20px;
-    }
+.team {
+  font-size: 28px;
+  font-weight: 800;
+}
 
-    .prediction-main {
-      font-size: 25px;
-      font-weight: 800;
-      margin: 10px 0;
-    }
+.vs {
+  font-size: 24px;
+  color: #4b83ff;
+  font-weight: 900;
+}
 
-    .confidence {
-      color: #72a7ff;
-      font-size: 18px;
-      font-weight: 700;
-    }
+.meta {
+  text-align: center;
+  color: #aeb8c9;
+  margin-top: 12px;
+  font-size: 17px;
+}
 
-    .risk {
-      margin-top: 8px;
-      color: #f2c75c;
-      font-weight: 700;
-    }
+.grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 14px;
+}
 
-    .analysis-text {
-      color: #aeb8c9;
-      font-size: 17px;
-      line-height: 1.7;
-    }
+.pred {
+  background: #0d131e;
+  border: 1px solid #283247;
+  border-radius: 18px;
+  padding: 20px;
+  text-align: center;
+}
 
-    .warning {
-      background: #101722;
-      border: 1px solid #293347;
-      border-radius: 18px;
-      padding: 18px;
-      color: #9faabc;
-      font-size: 14px;
-      line-height: 1.6;
-      margin-top: 22px;
-    }
+.pred .label {
+  color: #aab4c5;
+  font-size: 15px;
+  margin-bottom: 10px;
+}
 
-    .back-button {
-      display: block;
-      width: 100%;
-      border: none;
-      border-radius: 17px;
-      padding: 17px;
-      background: #3267e8;
-      color: white;
-      font-size: 18px;
-      font-weight: 800;
-      text-align: center;
-      text-decoration: none;
-      margin-top: 24px;
-    }
+.pred .value {
+  font-size: 24px;
+  font-weight: 850;
+}
 
-    .back-button:active {
-      transform: scale(.98);
-    }
+.pred .confidence {
+  margin-top: 9px;
+  font-size: 16px;
+  color: #b9c2d2;
+}
 
-    .loading {
-      text-align: center;
-      color: #8f9aae;
-      padding: 30px 10px;
-    }
-  </style>
+.note {
+  background: #0d131e;
+  border-radius: 16px;
+  padding: 17px;
+  color: #aeb8c9;
+  line-height: 1.6;
+}
+
+.warning {
+  border-left: 4px solid #f2bd42;
+  padding-left: 14px;
+}
+
+.success {
+  border-left: 4px solid #3d82ff;
+  padding-left: 14px;
+}
+
+.hidden {
+  display: none;
+}
+
+@media(max-width:650px) {
+
+  .container {
+    width: min(100% - 20px, 920px);
+    padding-top: 18px;
+  }
+
+  h1 {
+    font-size: 29px;
+  }
+
+  .match {
+    grid-template-columns: 1fr;
+  }
+
+  .vs {
+    margin: -5px 0;
+  }
+
+  .team {
+    font-size: 25px;
+  }
+
+  .grid {
+    grid-template-columns: 1fr;
+  }
+
+  .card {
+    padding: 18px;
+    border-radius: 20px;
+  }
+}
+</style>
 </head>
 
 <body>
 
-  <main class="container">
+<div class="container">
 
-    <header class="top">
-      <h1>⚽ Analyse du match</h1>
-      <p>Analyse basée sur les informations du match</p>
-    </header>
+  <h1>⚽ Bet Screenshot Analyzer</h1>
+
+  <div class="subtitle">
+    Analyse indépendante d'un match à partir d'une capture d'écran
+  </div>
+
+  <!-- IMPORTATION -->
+
+  <section class="card">
+
+    <h2>📸 Importer une capture</h2>
+
+    <label class="upload" for="fileInput">
+
+      <div>
+
+        <strong>
+          📷 Choisir une capture d'écran
+        </strong>
+
+        <span class="muted">
+          Les cotes peuvent être cachées.
+          Elles ne sont pas utilisées pour le pronostic.
+        </span>
+
+      </div>
+
+    </label>
+
+    <input
+      id="fileInput"
+      type="file"
+      accept="image/*"
+    >
+
+    <img
+      id="preview"
+      class="preview"
+      alt="Capture sélectionnée"
+    >
+
+    <button
+      id="analyzeBtn"
+      disabled
+    >
+      🔎 Analyser le match
+    </button>
+
+    <div
+      id="status"
+      class="status"
+    >
+      Sélectionne une capture pour commencer.
+    </div>
+
+  </section>
+
+
+  <!-- RESULTATS -->
+
+  <section
+    id="result"
+    class="hidden"
+  >
 
     <!-- MATCH -->
-    <section class="card">
 
-      <div class="match-title">
-        🏟️ Match détecté
-      </div>
+    <div class="card">
 
-      <div class="teams">
-        <div class="team" id="team1">Équipe 1</div>
+      <h2>⚽ Match détecté</h2>
 
-        <div class="vs">VS</div>
+      <div class="match">
 
-        <div class="team" id="team2">Équipe 2</div>
-      </div>
-
-      <div class="date" id="matchDate">
-        Date et heure du match
-      </div>
-
-    </section>
-
-
-    <!-- INFORMATIONS -->
-    <section class="card">
-
-      <div class="section-title">
-        📋 Informations détectées
-      </div>
-
-      <div class="info">
-
-        <div>
-          <strong>🏆 Championnat :</strong>
-          <span id="league">Non détecté</span>
+        <div
+          id="home"
+          class="team"
+        >
+          —
         </div>
 
-        <div>
-          <strong>📅 Date :</strong>
-          <span id="dateInfo">Non détectée</span>
+        <div class="vs">
+          VS
         </div>
 
-        <div>
-          <strong>🕐 Heure :</strong>
-          <span id="timeInfo">Non détectée</span>
+        <div
+          id="away"
+          class="team"
+        >
+          —
         </div>
 
       </div>
 
-    </section>
-
-
-    <!-- ANALYSE -->
-    <section class="card">
-
-      <div class="section-title">
-        📊 Analyse
+      <div
+        id="meta"
+        class="meta"
+      >
+        —
       </div>
 
-      <div class="analysis-text" id="analysisText">
+    </div>
 
-        Analyse en préparation.
+
+    <!-- PRONOSTICS -->
+
+    <div class="card">
+
+      <h2>🎯 Pronostics</h2>
+
+      <div class="grid">
+
+        <!-- VICTOIRE -->
+
+        <div class="pred">
+
+          <div class="label">
+            Victoire / 1X2
+          </div>
+
+          <div
+            id="resultPred"
+            class="value"
+          >
+            —
+          </div>
+
+          <div
+            id="resultConf"
+            class="confidence"
+          >
+            Confiance —
+          </div>
+
+        </div>
+
+
+        <!-- BTTS -->
+
+        <div class="pred">
+
+          <div class="label">
+            Les deux équipes marquent
+          </div>
+
+          <div
+            id="bttsPred"
+            class="value"
+          >
+            —
+          </div>
+
+          <div
+            id="bttsConf"
+            class="confidence"
+          >
+            Confiance —
+          </div>
+
+        </div>
+
+
+        <!-- BUTS -->
+
+        <div class="pred">
+
+          <div class="label">
+            Nombre de buts
+          </div>
+
+          <div
+            id="goalsPred"
+            class="value"
+          >
+            —
+          </div>
+
+          <div
+            id="goalsConf"
+            class="confidence"
+          >
+            Confiance —
+          </div>
+
+        </div>
+
+      </div>
+
+    </div>
+
+
+    <!-- METHODE -->
+
+    <div class="card">
+
+      <h2>📊 Méthode d'analyse</h2>
+
+      <div class="note">
+
+        <div class="success">
+
+          <strong>
+            Les cotes sont ignorées.
+          </strong>
+
+          <br><br>
+
+          Le système est conçu pour analyser le match
+          à partir des informations sportives disponibles,
+          notamment :
+
+          <br><br>
+
+          • Forme récente des deux équipes<br>
+          • Derniers matchs<br>
+          • Buts marqués<br>
+          • Buts encaissés<br>
+          • Performances à domicile<br>
+          • Performances à l'extérieur<br>
+          • Confrontations directes<br>
+          • Régularité offensive<br>
+          • Solidité défensive<br>
+          • Informations du championnat<br>
+          • Disponibilité des données
+
+        </div>
+
+      </div>
+
+    </div>
+
+
+    <!-- TROIS TYPES DE PRONOSTICS -->
+
+    <div class="card">
+
+      <h2>🔮 Types de pronostics</h2>
+
+      <div class="note">
+
+        <strong>1️⃣ Résultat du match</strong>
+
+        <br>
+
+        Victoire équipe 1 / Match nul / Victoire équipe 2
 
         <br><br>
 
-        Le système doit analyser notamment :
-        <br>• la forme récente des deux équipes
-        <br>• les derniers résultats
-        <br>• les buts marqués
-        <br>• les buts encaissés
-        <br>• les performances à domicile et à l'extérieur
-        <br>• les confrontations précédentes
-        <br>• les tendances récentes
+        <strong>2️⃣ Les deux équipes marquent</strong>
+
+        <br>
+
+        Oui ou Non
+
+        <br><br>
+
+        <strong>3️⃣ Nombre de buts</strong>
+
+        <br>
+
+        Exemple :
+
+        <br>
+
+        • Plus de 1,5 buts<br>
+        • Plus de 2,5 buts<br>
+        • Moins de 3,5 buts
 
       </div>
 
-    </section>
+    </div>
 
 
-    <!-- PRONOSTIC 1 -->
-    <section class="card">
+    <!-- AVERTISSEMENT -->
 
-      <div class="section-title">
-        🏆 Pronostic — Résultat
-      </div>
+    <div class="card">
 
-      <div class="prediction">
+      <h2>⚠️ Important</h2>
 
-        <h3>Résultat du match</h3>
+      <div class="note">
 
-        <div class="prediction-main" id="resultPrediction">
-          Analyse en cours...
-        </div>
+        <div class="warning">
 
-        <div class="confidence" id="resultConfidence">
-          Confiance : — %
-        </div>
+          Les pourcentages de confiance sont des estimations
+          et ne garantissent jamais le résultat d'un match.
 
-        <div class="risk" id="resultRisk">
-          ⚠️ Risque : —
-        </div>
+          <br><br>
 
-      </div>
+          Cette version prépare l'interface pour une véritable
+          analyse statistique.
 
-    </section>
+          <br><br>
 
+          <strong>
+            Les prochaines données à connecter seront les
+            statistiques réelles des équipes.
+          </strong>
 
-    <!-- PRONOSTIC 2 -->
-    <section class="card">
-
-      <div class="section-title">
-        ⚽ Pronostic — Les deux équipes marquent
-      </div>
-
-      <div class="prediction">
-
-        <h3>BTTS</h3>
-
-        <div class="prediction-main" id="bttsPrediction">
-          Analyse en cours...
-        </div>
-
-        <div class="confidence" id="bttsConfidence">
-          Confiance : — %
-        </div>
-
-        <div class="risk" id="bttsRisk">
-          ⚠️ Risque : —
         </div>
 
       </div>
 
-    </section>
+    </div>
+
+  </section>
+
+</div>
 
 
-    <!-- PRONOSTIC 3 -->
-    <section class="card">
+<script>
 
-      <div class="section-title">
-        🎯 Pronostic — Nombre de buts
-      </div>
+const fileInput =
+  document.getElementById("fileInput");
 
-      <div class="prediction">
+const preview =
+  document.getElementById("preview");
 
-        <h3>Total de buts</h3>
+const analyzeBtn =
+  document.getElementById("analyzeBtn");
 
-        <div class="prediction-main" id="goalsPrediction">
-          Analyse en cours...
-        </div>
+const statusEl =
+  document.getElementById("status");
 
-        <div class="confidence" id="goalsConfidence">
-          Confiance : — %
-        </div>
-
-        <div class="risk" id="goalsRisk">
-          ⚠️ Risque : —
-        </div>
-
-      </div>
-
-    </section>
+const result =
+  document.getElementById("result");
 
 
-    <!-- NOTE -->
-    <section class="warning">
+/*
+====================================================
+SELECTION DE LA CAPTURE
+====================================================
+*/
 
-      ⚠️ <strong>Important :</strong>
+fileInput.addEventListener("change", () => {
 
-      Les pronostics sont des estimations et ne garantissent pas
-      le résultat d'un match.
+  const file = fileInput.files[0];
 
-      <br><br>
+  if (!file) {
+    return;
+  }
 
-      Les cotes de paris ne sont pas utilisées comme base de décision
-      dans cette interface.
+  preview.src =
+    URL.createObjectURL(file);
 
-      <br><br>
+  preview.style.display =
+    "block";
 
-      Pour produire une analyse réellement basée sur la forme des équipes,
-      le site devra ensuite être connecté à une source de données football
-      fiable et actualisée.
+  analyzeBtn.disabled =
+    false;
 
-    </section>
+  statusEl.textContent =
+    "Capture reçue. Les cotes seront ignorées.";
 
-
-    <a href="index.html" class="back-button">
-      ← Retour à l'importation
-    </a>
-
-  </main>
-
-
-  <script>
-
-    /*
-      Pour l'instant, les informations affichées ici
-      sont des valeurs de démonstration.
-
-      La prochaine étape sera de transmettre automatiquement
-      les équipes, la date et le championnat depuis index.html.
-    */
-
-    const params = new URLSearchParams(window.location.search);
-
-    const team1 = params.get("team1");
-    const team2 = params.get("team2");
-    const league = params.get("league");
-    const date = params.get("date");
-    const time = params.get("time");
+});
 
 
-    if (team1) {
-      document.getElementById("team1").textContent = team1;
-    }
+/*
+====================================================
+ANALYSE
+====================================================
 
-    if (team2) {
-      document.getElementById("team2").textContent = team2;
-    }
+IMPORTANT :
 
-    if (league) {
-      document.getElementById("league").textContent = league;
-    }
+Cette version ne lit volontairement
+AUCUNE cote.
 
-    if (date) {
-      document.getElementById("dateInfo").textContent = date;
-    }
+Le système doit ensuite être connecté
+à une vraie source de données football.
 
-    if (time) {
-      document.getElementById("timeInfo").textContent = time;
-    }
+Les informations recherchées seront :
 
-    if (date || time) {
+- Championnat
+- Equipe domicile
+- Equipe extérieure
+- Date
+- Heure
+- Derniers matchs
+- Forme récente
+- Buts marqués
+- Buts encaissés
+- Domicile / extérieur
+- Confrontations directes
 
-      const dateDisplay =
-        (date || "Date inconnue") +
-        " — " +
-        (time || "Heure inconnue");
+====================================================
+*/
 
-      document.getElementById("matchDate").textContent =
-        dateDisplay;
-    }
+analyzeBtn.addEventListener("click", () => {
 
 
-    /*
-      IMPORTANT :
+  /*
+  ----------------------------------------------
+  DONNEES DE DEMONSTRATION
+  ----------------------------------------------
 
-      Aucun calcul basé sur les cotes n'est effectué ici.
+  Ces données permettent uniquement de tester
+  l'affichage.
 
-      Les vraies prédictions seront ajoutées lorsque
-      nous connecterons les données sportives réelles.
-    */
+  Elles seront remplacées par les données
+  réellement détectées sur la capture puis
+  par les statistiques football réelles.
+  */
 
-  </script>
+  const match = {
+
+    home: "Espanyol",
+
+    away: "Levante UD",
+
+    competition: "La Liga",
+
+    date: "16.08.2026",
+
+    time: "18:00"
+
+  };
+
+
+  /*
+  ----------------------------------------------
+  AFFICHAGE DU MATCH
+  ----------------------------------------------
+  */
+
+  document.getElementById("home")
+    .textContent = match.home;
+
+  document.getElementById("away")
+    .textContent = match.away;
+
+  document.getElementById("meta")
+    .textContent =
+      `${match.competition} • ${match.date} — ${match.time}`;
+
+
+  /*
+  ----------------------------------------------
+  PRONOSTIC 1X2
+  ----------------------------------------------
+
+  Pas de cote utilisée.
+  */
+
+  document.getElementById("resultPred")
+    .textContent =
+      "En attente des statistiques";
+
+  document.getElementById("resultConf")
+    .textContent =
+      "Analyse statistique requise";
+
+
+  /*
+  ----------------------------------------------
+  BTTS
+  ----------------------------------------------
+  */
+
+  document.getElementById("bttsPred")
+    .textContent =
+      "En attente des statistiques";
+
+  document.getElementById("bttsConf")
+    .textContent =
+      "Analyse statistique requise";
+
+
+  /*
+  ----------------------------------------------
+  NOMBRE DE BUTS
+  ----------------------------------------------
+  */
+
+  document.getElementById("goalsPred")
+    .textContent =
+      "En attente des statistiques";
+
+  document.getElementById("goalsConf")
+    .textContent =
+      "Analyse statistique requise";
+
+
+  /*
+  ----------------------------------------------
+  AFFICHAGE DES RESULTATS
+  ----------------------------------------------
+  */
+
+  result.classList.remove("hidden");
+
+  statusEl.textContent =
+    "Match identifié. Les cotes ne sont pas utilisées. Le système attend maintenant les statistiques réelles.";
+
+  result.scrollIntoView({
+    behavior: "smooth",
+    block: "start"
+  });
+
+});
+
+</script>
 
 </body>
 </html>
