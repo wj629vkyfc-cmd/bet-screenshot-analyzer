@@ -3,7 +3,11 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
   <title>Bet Screenshot Analyzer</title>
+
+  <!-- Moteur OCR pour lire le texte de la capture -->
+  <script src="https://cdn.jsdelivr.net/npm/tesseract.js@5/dist/tesseract.min.js"></script>
 
   <style>
     * {
@@ -22,7 +26,7 @@
       width: 100%;
       max-width: 500px;
       margin: auto;
-      padding: 25px 18px;
+      padding: 25px 18px 40px;
     }
 
     .logo {
@@ -35,7 +39,7 @@
     .subtitle {
       text-align: center;
       color: #9aa4b2;
-      margin-bottom: 35px;
+      margin-bottom: 30px;
       line-height: 1.4;
     }
 
@@ -101,142 +105,347 @@
       cursor: not-allowed;
     }
 
-    .info {
-      margin-top: 20px;
-      padding: 14px;
+    .status {
+      display: none;
+      margin-top: 18px;
+      padding: 15px;
       border-radius: 12px;
       background: #101620;
-      color: #9aa4b2;
+      color: #b9c2d0;
+      line-height: 1.5;
       font-size: 14px;
+    }
+
+    .detected {
+      display: none;
+      margin-top: 18px;
+      padding: 16px;
+      border-radius: 12px;
+      background: #101827;
+      border: 1px solid #315db8;
+    }
+
+    .detected-title {
+      font-size: 17px;
+      font-weight: bold;
+      margin-bottom: 12px;
+    }
+
+    .detected p {
+      margin: 8px 0;
+      color: #c5cedb;
+    }
+
+    .detected span {
+      color: white;
+      font-weight: bold;
+    }
+
+    .warning {
+      margin-top: 15px;
+      color: #f5c451;
+      font-size: 13px;
       line-height: 1.5;
     }
 
-    .loading {
-      display: none;
-      text-align: center;
-      margin-top: 15px;
-      color: #9aa4b2;
+    .progress {
+      width: 100%;
+      height: 7px;
+      background: #252d3a;
+      border-radius: 10px;
+      margin-top: 12px;
+      overflow: hidden;
+    }
+
+    .progress-bar {
+      width: 0%;
+      height: 100%;
+      background: #3b82f6;
+      transition: width 0.3s ease;
     }
   </style>
 </head>
 
 <body>
 
-  <div class="container">
+<div class="container">
 
-    <div class="logo">
-      ⚽ Bet Screenshot Analyzer
-    </div>
+  <div class="logo">
+    ⚽ Bet Screenshot Analyzer
+  </div>
 
-    <div class="subtitle">
-      Analyse ton match à partir d'une capture d'écran
-    </div>
+  <div class="subtitle">
+    Analyse un match à partir d'une capture d'écran
+  </div>
 
-    <div class="card">
+  <div class="card">
 
-      <h1>Importer une capture</h1>
+    <h1>📷 Importer une capture</h1>
 
-      <label class="upload">
-        <strong>📷 Choisir une capture d'écran</strong>
-        Appuie ici pour sélectionner l'image de ton match
+    <label class="upload">
 
-        <input
-          type="file"
-          id="imageInput"
-          accept="image/*"
-        >
-      </label>
+      <strong>
+        📸 Choisir une capture d'écran
+      </strong>
 
-      <img
-        id="preview"
-        alt="Aperçu de la capture du match"
+      Appuie ici pour sélectionner l'image du match
+
+      <input
+        type="file"
+        id="imageInput"
+        accept="image/*"
       >
 
-      <button
-        id="analyzeButton"
-        disabled
-      >
-        🔍 Analyser le match
-      </button>
+    </label>
 
-      <div
-        class="loading"
-        id="loading"
-      >
-        ⏳ Préparation de l'analyse...
+    <img
+      id="preview"
+      alt="Capture du match"
+    >
+
+    <button
+      id="analyzeButton"
+      disabled
+    >
+      🔍 Identifier le match
+    </button>
+
+    <div
+      class="status"
+      id="status"
+    >
+      <div id="statusText">
+        Préparation...
       </div>
 
-      <div class="info">
-        Le système analysera les informations visibles sur la capture
-        afin de préparer l'analyse et le pronostic du match.
+      <div class="progress">
+        <div
+          class="progress-bar"
+          id="progressBar"
+        ></div>
+      </div>
+    </div>
+
+    <div
+      class="detected"
+      id="detected"
+    >
+
+      <div class="detected-title">
+        🔎 Informations détectées
+      </div>
+
+      <p>
+        Texte trouvé :
+      </p>
+
+      <p>
+        <span id="ocrText">
+          —
+        </span>
+      </p>
+
+      <div class="warning">
+        ℹ️ Les cotes ne seront pas utilisées pour calculer
+        le pronostic.
       </div>
 
     </div>
 
   </div>
 
-  <script>
+</div>
 
-    const imageInput = document.getElementById("imageInput");
-    const preview = document.getElementById("preview");
-    const analyzeButton = document.getElementById("analyzeButton");
-    const loading = document.getElementById("loading");
 
-    let selectedImage = null;
+<script>
 
-    /*
-      Sélection de la capture
-    */
-    imageInput.addEventListener("change", function () {
+  const imageInput =
+    document.getElementById("imageInput");
 
-      const file = this.files[0];
+  const preview =
+    document.getElementById("preview");
 
-      if (!file) {
-        return;
+  const analyzeButton =
+    document.getElementById("analyzeButton");
+
+  const status =
+    document.getElementById("status");
+
+  const statusText =
+    document.getElementById("statusText");
+
+  const progressBar =
+    document.getElementById("progressBar");
+
+  const detected =
+    document.getElementById("detected");
+
+  const ocrText =
+    document.getElementById("ocrText");
+
+
+  let selectedImage = null;
+
+
+  /*
+   * Sélection de l'image
+   */
+
+  imageInput.addEventListener("change", function () {
+
+    const file = this.files[0];
+
+    if (!file) {
+      return;
+    }
+
+    selectedImage = file;
+
+    const imageURL =
+      URL.createObjectURL(file);
+
+    preview.src = imageURL;
+
+    preview.style.display = "block";
+
+    analyzeButton.disabled = false;
+
+    detected.style.display = "none";
+
+    status.style.display = "none";
+
+  });
+
+
+  /*
+   * Analyse OCR
+   */
+
+  analyzeButton.addEventListener("click", async function () {
+
+    if (!selectedImage) {
+      return;
+    }
+
+    analyzeButton.disabled = true;
+
+    status.style.display = "block";
+
+    detected.style.display = "none";
+
+    statusText.textContent =
+      "⏳ Lecture de la capture...";
+
+    progressBar.style.width = "5%";
+
+
+    try {
+
+      const result =
+        await Tesseract.recognize(
+          selectedImage,
+          "fra+eng",
+          {
+            logger: function (message) {
+
+              if (
+                message.status === "recognizing text"
+              ) {
+
+                const percent =
+                  Math.round(
+                    message.progress * 100
+                  );
+
+                progressBar.style.width =
+                  percent + "%";
+
+                statusText.textContent =
+                  "🔎 Lecture de la capture : "
+                  + percent
+                  + "%";
+
+              }
+
+            }
+          }
+        );
+
+
+      const text =
+        result.data.text
+          .replace(/\s+/g, " ")
+          .trim();
+
+
+      progressBar.style.width = "100%";
+
+      statusText.textContent =
+        "✅ Match identifié dans la capture.";
+
+
+      if (!text) {
+
+        ocrText.textContent =
+          "Aucun texte détecté.";
+
+      } else {
+
+        /*
+         * On affiche le texte détecté.
+         *
+         * IMPORTANT :
+         * aucune cote n'est utilisée
+         * dans le calcul du futur pronostic.
+         */
+
+        ocrText.textContent = text;
+
       }
 
-      selectedImage = file;
 
-      const imageURL = URL.createObjectURL(file);
+      detected.style.display = "block";
 
-      preview.src = imageURL;
-      preview.style.display = "block";
-
-      analyzeButton.disabled = false;
-
-    });
-
-
-    /*
-      Passage vers la page d'analyse
-    */
-    analyzeButton.addEventListener("click", function () {
-
-      if (!selectedImage) {
-        return;
-      }
-
-      loading.style.display = "block";
-      analyzeButton.disabled = true;
 
       /*
-        Pour cette première version,
-        la page d'analyse est ouverte directement.
+       * On conserve le texte OCR pour la page
+       * d'analyse.
+       */
 
-        L'étape suivante permettra de transmettre
-        automatiquement les informations détectées
-        dans la capture.
-      */
+      sessionStorage.setItem(
+        "matchOCR",
+        text
+      );
+
+
+      /*
+       * Passage vers la page 2
+       */
 
       setTimeout(function () {
 
-        window.location.href = "analysis.html";
+        window.location.href =
+          "analysis.html";
 
-      }, 500);
+      }, 1200);
 
-    });
 
-  </script>
+    } catch (error) {
+
+      console.error(error);
+
+      statusText.textContent =
+        "❌ Impossible de lire cette capture.";
+
+      progressBar.style.width = "0%";
+
+      analyzeButton.disabled = false;
+
+    }
+
+  });
+
+</script>
 
 </body>
 </html>
