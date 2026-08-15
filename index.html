@@ -36,6 +36,7 @@
       text-align: center;
       color: #9aa4b2;
       margin-bottom: 35px;
+      line-height: 1.4;
     }
 
     .card {
@@ -75,7 +76,7 @@
     #preview {
       display: none;
       width: 100%;
-      max-height: 350px;
+      max-height: 400px;
       object-fit: contain;
       margin-top: 20px;
       border-radius: 12px;
@@ -109,6 +110,13 @@
       font-size: 14px;
       line-height: 1.5;
     }
+
+    .loading {
+      display: none;
+      text-align: center;
+      margin-top: 15px;
+      color: #9aa4b2;
+    }
   </style>
 </head>
 
@@ -116,7 +124,9 @@
 
   <div class="container">
 
-    <div class="logo">⚽ Bet Screenshot Analyzer</div>
+    <div class="logo">
+      ⚽ Bet Screenshot Analyzer
+    </div>
 
     <div class="subtitle">
       Analyse ton match à partir d'une capture d'écran
@@ -137,11 +147,24 @@
         >
       </label>
 
-      <img id="preview" alt="Aperçu de la capture">
+      <img
+        id="preview"
+        alt="Aperçu de la capture du match"
+      >
 
-      <button id="analyzeButton" disabled>
+      <button
+        id="analyzeButton"
+        disabled
+      >
         🔍 Analyser le match
       </button>
+
+      <div
+        class="loading"
+        id="loading"
+      >
+        ⏳ Préparation de l'analyse...
+      </div>
 
       <div class="info">
         Le système analysera les informations visibles sur la capture
@@ -153,15 +176,26 @@
   </div>
 
   <script>
+
     const imageInput = document.getElementById("imageInput");
     const preview = document.getElementById("preview");
     const analyzeButton = document.getElementById("analyzeButton");
+    const loading = document.getElementById("loading");
 
+    let selectedImage = null;
+
+    /*
+      Sélection de la capture
+    */
     imageInput.addEventListener("change", function () {
 
       const file = this.files[0];
 
-      if (!file) return;
+      if (!file) {
+        return;
+      }
+
+      selectedImage = file;
 
       const imageURL = URL.createObjectURL(file);
 
@@ -169,15 +203,39 @@
       preview.style.display = "block";
 
       analyzeButton.disabled = false;
+
     });
 
+
+    /*
+      Passage vers la page d'analyse
+    */
     analyzeButton.addEventListener("click", function () {
 
-      alert(
-        "Capture reçue ! La prochaine étape sera d'ajouter l'analyse et le pronostic."
-      );
+      if (!selectedImage) {
+        return;
+      }
+
+      loading.style.display = "block";
+      analyzeButton.disabled = true;
+
+      /*
+        Pour cette première version,
+        la page d'analyse est ouverte directement.
+
+        L'étape suivante permettra de transmettre
+        automatiquement les informations détectées
+        dans la capture.
+      */
+
+      setTimeout(function () {
+
+        window.location.href = "analysis.html";
+
+      }, 500);
 
     });
+
   </script>
 
 </body>
