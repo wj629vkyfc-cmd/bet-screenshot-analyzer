@@ -1,0 +1,303 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Analyse du match</title>
+
+  <style>
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      background: #0b0f17;
+      color: white;
+      font-family: Arial, sans-serif;
+    }
+
+    .container {
+      max-width: 500px;
+      margin: auto;
+      padding: 25px 18px 40px;
+    }
+
+    .top {
+      text-align: center;
+      margin: 20px 0 30px;
+    }
+
+    .top .icon {
+      font-size: 45px;
+    }
+
+    h1 {
+      font-size: 28px;
+      margin: 10px 0;
+    }
+
+    .subtitle {
+      color: #9aa4b2;
+      font-size: 16px;
+    }
+
+    .card {
+      background: #151b26;
+      border: 1px solid #283142;
+      border-radius: 18px;
+      padding: 22px;
+      margin-bottom: 18px;
+    }
+
+    .match {
+      text-align: center;
+    }
+
+    .teams {
+      font-size: 23px;
+      font-weight: bold;
+      margin: 15px 0;
+    }
+
+    .vs {
+      color: #3b82f6;
+      margin: 0 8px;
+    }
+
+    .date {
+      color: #9aa4b2;
+    }
+
+    .section-title {
+      font-size: 18px;
+      font-weight: bold;
+      margin-bottom: 15px;
+    }
+
+    .odds {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 8px;
+    }
+
+    .odd {
+      background: #0e141e;
+      border-radius: 12px;
+      padding: 13px 5px;
+      text-align: center;
+    }
+
+    .odd span {
+      display: block;
+      color: #9aa4b2;
+      font-size: 13px;
+      margin-bottom: 6px;
+    }
+
+    .odd strong {
+      font-size: 20px;
+    }
+
+    .prediction {
+      text-align: center;
+      background: #101827;
+      border: 1px solid #315db8;
+    }
+
+    .prediction-label {
+      color: #9aa4b2;
+      font-size: 14px;
+    }
+
+    .prediction-main {
+      font-size: 28px;
+      font-weight: bold;
+      margin: 12px 0;
+    }
+
+    .confidence {
+      font-size: 20px;
+      font-weight: bold;
+    }
+
+    .risk {
+      margin-top: 12px;
+      color: #f5c451;
+      font-weight: bold;
+    }
+
+    .reason {
+      color: #b5bfcc;
+      line-height: 1.6;
+      font-size: 15px;
+    }
+
+    .back {
+      width: 100%;
+      border: none;
+      border-radius: 12px;
+      padding: 15px;
+      background: #252e3d;
+      color: white;
+      font-size: 16px;
+      font-weight: bold;
+      cursor: pointer;
+    }
+  </style>
+</head>
+
+<body>
+
+<div class="container">
+
+  <div class="top">
+    <div class="icon">📊</div>
+    <h1>Analyse du match</h1>
+    <div class="subtitle">Analyse automatique des informations détectées</div>
+  </div>
+
+  <div class="card match">
+    <div class="section-title">⚽ Match</div>
+
+    <div class="teams">
+      <span id="team1">Espanyol</span>
+      <span class="vs">VS</span>
+      <span id="team2">Levante UD</span>
+    </div>
+
+    <div class="date" id="matchDate">
+      16.08.2026 — 18:00
+    </div>
+  </div>
+
+  <div class="card">
+
+    <div class="section-title">📈 Cotes 1X2</div>
+
+    <div class="odds">
+
+      <div class="odd">
+        <span>V1</span>
+        <strong id="odd1">2.135</strong>
+      </div>
+
+      <div class="odd">
+        <span>Nul</span>
+        <strong id="oddX">3.455</strong>
+      </div>
+
+      <div class="odd">
+        <span>V2</span>
+        <strong id="odd2">3.88</strong>
+      </div>
+
+    </div>
+
+  </div>
+
+  <div class="card prediction">
+
+    <div class="prediction-label">
+      🎯 PRONOSTIC PRINCIPAL
+    </div>
+
+    <div class="prediction-main" id="prediction">
+      Victoire Espanyol
+    </div>
+
+    <div class="confidence">
+      Confiance : <span id="confidence">—</span>
+    </div>
+
+    <div class="risk">
+      ⚠️ Risque : <span id="risk">—</span>
+    </div>
+
+  </div>
+
+  <div class="card">
+
+    <div class="section-title">📝 Analyse</div>
+
+    <div class="reason" id="reason">
+      Analyse des cotes en cours...
+    </div>
+
+  </div>
+
+  <button class="back" onclick="window.location.href='index.html'">
+    ← Nouvelle capture
+  </button>
+
+</div>
+
+<script>
+
+  const odd1 = 2.135;
+  const oddX = 3.455;
+  const odd2 = 3.88;
+
+  const p1 = 1 / odd1;
+  const px = 1 / oddX;
+  const p2 = 1 / odd2;
+
+  const total = p1 + px + p2;
+
+  const prob1 = (p1 / total) * 100;
+  const prob2 = (p2 / total) * 100;
+  const probX = (px / total) * 100;
+
+  let prediction;
+  let confidence;
+  let risk;
+  let reason;
+
+  if (prob1 > prob2 && prob1 > probX) {
+
+    prediction = "Victoire Espanyol";
+    confidence = Math.round(prob1) + "%";
+
+    if (prob1 >= 50) {
+      risk = "Faible à moyen";
+    } else {
+      risk = "Moyen";
+    }
+
+    reason =
+      "Les cotes indiquent Espanyol comme l'issue la plus probable " +
+      "parmi les trois résultats 1X2. Cette estimation est basée " +
+      "uniquement sur les cotes visibles et ne constitue pas une " +
+      "garantie du résultat.";
+
+  } else if (prob2 > prob1 && prob2 > probX) {
+
+    prediction = "Victoire Levante UD";
+    confidence = Math.round(prob2) + "%";
+    risk = "Moyen";
+
+    reason =
+      "Les cotes donnent Levante UD comme l'issue la plus probable " +
+      "parmi les résultats 1X2.";
+
+  } else {
+
+    prediction = "Match nul";
+    confidence = Math.round(probX) + "%";
+    risk = "Élevé";
+
+    reason =
+      "Le marché donne une probabilité relativement importante au " +
+      "match nul, mais cette issue reste difficile à prévoir.";
+
+  }
+
+  document.getElementById("prediction").textContent = prediction;
+  document.getElementById("confidence").textContent = confidence;
+  document.getElementById("risk").textContent = risk;
+  document.getElementById("reason").textContent = reason;
+
+</script>
+
+</body>
+</html>
